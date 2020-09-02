@@ -1,37 +1,29 @@
-import { exec, execFile } from "child_process";
-import { app, BrowserWindow, dialog, ipcMain, Menu, session } from "electron";
-import net from "net";
-import path from "path";
+import { exec, execFile } from 'child_process';
+import { app, BrowserWindow, dialog, ipcMain, Menu, session } from 'electron';
+import net from 'net';
+import path from 'path';
 
-if (require("electron-squirrel-startup")) {
+if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
 const handleStartupEvent = () => {
-  if (process.platform !== "win32") {
+  if (process.platform !== 'win32') {
     return false;
   }
 
   const squirrelCommand = process.argv[1];
   switch (squirrelCommand) {
-    case "--squirrel-install":
+    case '--squirrel-install':
       const target = path.basename(process.execPath);
-      const updateDotExe = path.resolve(
-        path.dirname(process.execPath),
-        "..",
-        "update.exe"
-      );
-      const createShortcut =
-        updateDotExe +
-        "--createShortcut=" +
-        target +
-        "--shortcut-locations=Desktop,StartMenu";
+      const updateDotExe = path.resolve(path.dirname(process.execPath), '..', 'update.exe');
+      const createShortcut = updateDotExe + '--createShortcut=' + target + '--shortcut-locations=Desktop,StartMenu';
       exec(createShortcut);
       // Always quit when done
 
       return true;
 
-    case "--squirrel-updated":
+    case '--squirrel-updated':
       // Optionally do things such as:
       //
       // - Install desktop and start menu shortcuts
@@ -43,7 +35,7 @@ const handleStartupEvent = () => {
       app.quit();
 
       return true;
-    case "--squirrel-uninstall":
+    case '--squirrel-uninstall':
       // Undo anything you did in the --squirrel-install and
       // --squirrel-updated handlers
 
@@ -51,7 +43,7 @@ const handleStartupEvent = () => {
       app.quit();
 
       return true;
-    case "--squirrel-obsolete":
+    case '--squirrel-obsolete':
       // This is called on the outgoing version of your app before
       // we update to the new version - it's the opposite of
       // --squirrel-updated
@@ -64,14 +56,14 @@ if (handleStartupEvent()) {
   app.quit();
 }
 
-const Browsericon = path.join(__dirname, "/static/icons/icon.png");
+const Browsericon = path.join(__dirname, '/static/icons/icon.png');
 declare var MAIN_WINDOW_WEBPACK_ENTRY: any;
 declare var MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
 
 declare var SECOND_WINDOW_WEBPACK_ENTRY: any;
 declare var SECOND_WINDOW_PRELOAD_WEBPACK_ENTRY: any;
 
-ipcMain.on("request-mainprocess-action", (event: any, arg: any) => {
+ipcMain.on('request-mainprocess-action', (event: any, arg: any) => {
   createSecondWindow();
 });
 
@@ -86,23 +78,13 @@ let mainWindow: any;
 let secondWindow: any;
 
 const createWindow = () => {
-  // session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
-  //   callback({ responseHeaders: Object.assign({
-  //       "Content-Security-Policy": [ "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://wallet.moneypot.com " ],
-  //       //  "Access-Control-Allow-Origin": ["*"]
-  //   }, details.responseHeaders)});
-  // });
-
   const filter = {
-    urls: ["https://*.wtfismyip.com/*", "https://*.moneypot.com/*"],
+    urls: ['https://*.wtfismyip.com/*', 'https://*.moneypot.com/*'],
   };
-  session.defaultSession.webRequest.onHeadersReceived(
-    filter,
-    (details: any, callback) => {
-      details.responseHeaders["access-control-allow-origin"] = "*";
-      callback({ responseHeaders: Object.assign({}, details.responseHeaders) });
-    }
-  );
+  session.defaultSession.webRequest.onHeadersReceived(filter, (details: any, callback) => {
+    details.responseHeaders['access-control-allow-origin'] = '*';
+    callback({ responseHeaders: Object.assign({}, details.responseHeaders) });
+  });
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -127,11 +109,11 @@ const createWindow = () => {
 
   // Check for all windows.
   mainWindow.webContents.session.setProxy({
-    proxyRules: "socks5://127.0.0.1:9050",
+    proxyRules: 'socks5://127.0.0.1:9050',
   });
 
   // Emitted when the window is closed.
-  mainWindow.on("closed", () => {
+  mainWindow.on('closed', () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
@@ -157,13 +139,13 @@ const createSecondWindow = () => {
   secondWindow.autoHideMenuBar = true;
   // This is unnecessary- but - ...
   secondWindow.webContents.session.setProxy({
-    proxyRules: "socks5://127.0.0.1:9050",
+    proxyRules: 'socks5://127.0.0.1:9050',
   });
   // Open the DevTools.
   // secondWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
-  secondWindow.on("closed", () => {
+  secondWindow.on('closed', () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
     // when you should delete the corresponding element.
@@ -176,20 +158,17 @@ const createSecondWindow = () => {
 // Some APIs can only be used after this event occurs.
 
 // check tor
-const portInUse = async (
-  port: number | undefined,
-  callback: { (returnValue: any): void; (arg0: boolean): void }
-) => {
+const portInUse = async (port: number | undefined, callback: { (returnValue: any): void; (arg0: boolean): void }) => {
   const server = net.createServer((socket) => {
-    socket.write("Echo server\r\n");
+    socket.write('Echo server\r\n');
     socket.pipe(socket);
   });
 
-  server.listen(port, "127.0.0.1");
-  server.on("error", (e) => {
+  server.listen(port, '127.0.0.1');
+  server.on('error', (e) => {
     callback(true);
   });
-  server.on("listening", (e: any) => {
+  server.on('listening', (e: any) => {
     server.close();
     callback(false);
   });
@@ -198,28 +177,25 @@ const portInUse = async (
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 const checkTor = async () => {
-  if (process.platform === "win32") {
+  if (process.platform === 'win32') {
     StartTorWindows();
     await delay(5000);
   }
-  portInUse(9050, (returnValue: any) => {
-    returnValue === false && tormessage()
-
+  portInUse(9050, (returnValue: boolean) => {
+    returnValue === false && tormessage();
   });
 };
-app.on("ready", () => { 
-  checkTor(),
-  createWindow()
-})
+app.on('ready', () => {
+  checkTor(), createWindow();
+});
 
 const options = {
-  type: "question",
-  buttons: ["I will check!"],
+  type: 'question',
+  buttons: ['I will check!'],
   defaultId: 1,
-  title: "is tor running?",
-  message: "Heya, are you sure tor is running?",
-  detail:
-    "it doesn't seem like anything is running on 127.0.0.1:9050! please check!",
+  title: 'is tor running?',
+  message: 'Heya, are you sure tor is running?',
+  detail: "it doesn't seem like anything is running on 127.0.0.1:9050! please check!",
   //  checkboxLabel: "do not show message anymore",
   //  checkboxChecked: true,
 };
@@ -230,23 +206,23 @@ const tormessage = async () => {
 };
 
 // I don't want users opening tabs themselves, so this code is unnecessary.
-app.on("browser-window-created", (e: any, window: any) => {
+app.on('browser-window-created', (e: any, window: any) => {
   window.setMenuBarVisibility(false), window.setIcon(Browsericon);
 });
 
 // Quit when all windows are closed.
-app.on("window-all-closed", () => {
+app.on('window-all-closed', () => {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== "darwin") {
+  if (process.platform !== 'darwin') {
     app.quit();
   }
-  if (process.platform === "win32") {
+  if (process.platform === 'win32') {
     // Maybe kill tor here. Debugging to see if this is necessary.
   }
 });
 
-app.on("activate", () => {
+app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null && secondWindow === null) {

@@ -8,8 +8,8 @@
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "publish": "electron-forge publish --platform=linux",
+    "prettier": "prettier --single-quote --trailing-comma es5 --print-width 160 --write \"src/**/*.{ts,tsx}\""
   },
   "keywords": [],
   "author": {
@@ -24,7 +24,7 @@
         "name": "moneypot",
         "executableName": "moneypot",
         "win32metadata": {
-          "FileDescription": "click me!",
+          "FileDescription": "A Moneypot product.",
           "ProductName": "moneypot"
         }
       },
@@ -114,15 +114,15 @@
     "copy-webpack-plugin": "^5.0.5",
     "css-loader": "^3.0.0",
     "electron": "7.1.1",
+    "electron-squirrel-startup": "^1.0.0",
     "file-loader": "^4.2.0",
     "fork-ts-checker-webpack-plugin": "^3.1.0",
-    "electron-squirrel-startup": "^1.0.0",
     "node-loader": "^0.6.0",
     "node-sass": "^4.13.0",
+    "prettier": "^2.1.1",
     "sass-loader": "^8.0.0",
     "style-loader": "^0.23.1",
     "ts-loader": "^6.2.1",
-    "typescript": "^3.7.2",
-    "tslint": "^5.20.1"
+    "typescript": "^3.7.2"
   }
 }
