@@ -19,6 +19,12 @@ export default function Overlay(props: any) {
 
   const [Bind, setBind] = useState('Shift+K');
 
+  // we can just refactor customKeys into the bind... todo?
+  function bind(e: string) { 
+    setBind(e)
+    setCustomKeys(true)
+  }
+
   useEffect(() => {
     const loadSett = () => {
       let keys: string | undefined;
@@ -51,13 +57,13 @@ export default function Overlay(props: any) {
   const applysettings = () => {
     if (ToasterInvis) {
       localStorage.setItem(`hasToasterInvis`, 'true');
-    } else if (!ToasterInvis) {
+    } else {
       localStorage.setItem(`hasToasterInvis`, 'false');
     }
     if (CustomKeys) {
       localStorage.setItem('hasCustomKeys', 'true');
       localStorage.setItem('getCustomKeys', Bind); // this will rewrite even if Bind is not changed.
-    } else if (!CustomKeys) {
+    } else {
       localStorage.setItem('hasCustomKeys', 'false');
     }
   };
@@ -96,14 +102,14 @@ export default function Overlay(props: any) {
           <Form>
             <FormGroup check>
               <Label check>
-                <Input id="setting_1" type="checkbox" onChange={updateOneToasterInvis} checked={ToasterInvis} /> Hide the Shift + K toaster on start-up.
+                <Input id="setting_1" type="checkbox" onChange={updateOneToasterInvis} checked={ToasterInvis} /> Hide the Shift + K toaster on startup.
               </Label>
               <Label check>
                 <Input id="setting_2" type="checkbox" onChange={updateCustomKeys} checked={CustomKeys} /> Set a special shortcut to open the overlay. (Default
                 is Shift + K)
               </Label>
               <InputGroup>
-                <Input placeholder={Bind} type="text" onChange={(e) => setBind(e.target.value)} />
+                <Input placeholder={Bind} type="text" onChange={(e) => bind(e.target.value)} />
               </InputGroup>
             </FormGroup>
           </Form>
