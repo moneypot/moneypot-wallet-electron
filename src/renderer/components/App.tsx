@@ -39,7 +39,7 @@ export default function LoadWallet() {
 
   const isNewest = async (url: string) => {
     // TODO URGENT!!!
-    const response = await fetch('https://run.mocky.io/v3/949d110c-8346-4025-a369-e4d4080faef2');
+    const response = await fetch('https://updates.moneypot.dev');
     const v = await response.json() as resp;
     v.versionScript === url ? toast.success("It seems like you're running the latest version!") : toast.error(`this URL might be outdated! Last update: ${new Date(v.latestDate).toISOString()}`);
   };
