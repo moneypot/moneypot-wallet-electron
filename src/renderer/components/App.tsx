@@ -35,14 +35,35 @@ export default function LoadWallet() {
       window.close();
     }
   }
-  // verify openpgp message of dev for signed wallet url
 
   const isNewest = async (url: string) => {
     // TODO URGENT!!!
     const response = await fetch('https://updates.moneypot.dev');
-    const v = await response.json() as resp;
-    v.versionScript === url ? toast.success("It seems like you're running the latest version!") : toast.error(`this URL might be outdated! Last update: ${new Date(v.latestDate).toISOString()}`);
-  };
+
+    if (response.status != 200) { 
+      toast.error("Couldn't fetch updates! You might be running an outdated version!")
+    } else { 
+      const v = await response.json() as resp;
+      v.versionScript === url ? toast.success("It seems like you're running the latest version!") : toast.error(`this URL might be outdated! Last update: ${new Date(v.latestDate).toISOString()}`);  
+    }
+ };
+
+
+  async function setNewWalletURL(url: string) { 
+    setWalletURL(url)
+    const d = url.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+    if (d === null) { 
+      return;
+    }
+    if (url.lastIndexOf('#') === -1) { 
+      return;
+    }
+
+    
+   await isNewest(url)
+  }
+
+
 
   return (
     <div className="full-page-container">
@@ -61,8 +82,7 @@ export default function LoadWallet() {
               <Input
                 value={walletURL}
                 onChange={(e) => {
-                  setWalletURL(e.target.value);
-                  isNewest(e.target.value);
+                  setNewWalletURL(e.target.value);
                 }}
                 placeholder={walletURL}
                 type="text"
